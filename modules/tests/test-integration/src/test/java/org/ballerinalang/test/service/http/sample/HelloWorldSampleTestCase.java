@@ -34,7 +34,7 @@ public class HelloWorldSampleTestCase extends IntegrationTestCase {
 
     @Test(description = "Test hello world sample test case invoking base path")
     public void testHelloWorldServiceByBasePath() throws IOException {
-        HttpResponse response = HttpClientRequest.doGet(getServiceURLHttp("hello"));
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("hello"), TestConstant.GET);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_TEXT_PLAIN, "Content-Type mismatched");

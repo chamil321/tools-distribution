@@ -26,6 +26,11 @@ public class TestConstant {
     public static final String HEADER_CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TYPE_JSON = "application/json";
     public static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
+    public static final String GET = "GET";
+    public static final String POST = "POST";
+    public static final String HEAD = "HEAD";
+    public static final String PUT = "PUT";
+    public static final String DELETE = "DELETE";
 
     //HTTP2 related Constants
     public static final long HTTP2_RESPONSE_TIME_OUT = 10;

@@ -1,6 +1,7 @@
 package org.ballerinalang.test.service.websocket.sample;
 
 import org.ballerinalang.test.util.HttpClientRequest;
+import org.ballerinalang.test.util.TestConstant;
 import org.ballerinalang.test.util.websocket.WebSocketClient;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -30,11 +31,11 @@ public class ConnectionStoreSampleTest extends WebSocketIntegrationTest {
         handshakeAllClients(webSocketClients);
         String sentText = "hello ";
         Map<String, String> headers = new HashMap<>();
-        HttpClientRequest.doPost(getServiceURLHttp("storeInfo/0"), sentText + "0", headers);
-        HttpClientRequest.doPost(getServiceURLHttp("storeInfo/1"), sentText + "1", headers);
-        HttpClientRequest.doPost(getServiceURLHttp("storeInfo/2"), sentText + "2", headers);
-        HttpClientRequest.doPost(getServiceURLHttp("storeInfo/3"), sentText + "3", headers);
-        HttpClientRequest.doPost(getServiceURLHttp("storeInfo/4"), sentText + "4", headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("storeInfo/0"), TestConstant.POST, sentText + "0", headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("storeInfo/1"), TestConstant.POST, sentText + "1", headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("storeInfo/2"), TestConstant.POST, sentText + "2", headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("storeInfo/3"), TestConstant.POST, sentText + "3", headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("storeInfo/4"), TestConstant.POST, sentText + "4", headers);
         Thread.sleep(threadSleepTime);
         for (int i = 0; i < clientCount; i++) {
             Assert.assertEquals(webSocketClients[i].getTextReceived(), sentText + i);
@@ -43,16 +44,16 @@ public class ConnectionStoreSampleTest extends WebSocketIntegrationTest {
 
     @Test(priority = 1)
     public void testRemoveStoredClient() throws IOException, InterruptedException, URISyntaxException {
-        HttpClientRequest.doGet(getServiceURLHttp("storeInfo/rm/0"));
+        HttpClientRequest.doExecute(getServiceURLHttp("storeInfo/rm/0"), TestConstant.GET);
         Thread.sleep(threadSleepTime);
         Map<String, String> headers = new HashMap<>();
-        HttpClientRequest.doPost(getServiceURLHttp("storeInfo/0"), "You are out", headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("storeInfo/0"), TestConstant.POST, "You are out", headers);
         Assert.assertEquals(webSocketClients[0].getTextReceived(), null);
     }
 
     @Test(priority = 2)
     public void testCloseConnection() throws IOException, InterruptedException {
-        HttpClientRequest.doGet(getServiceURLHttp("storeInfo/close/1"));
+        HttpClientRequest.doExecute(getServiceURLHttp("storeInfo/close/1"), TestConstant.GET);
         Assert.assertFalse(webSocketClients[1].isOpen());
         shutDownAllClients(webSocketClients);
     }

@@ -35,7 +35,7 @@ public class PassthroughServiceSampleTestCase extends IntegrationTestCase {
 
     @Test(description = "Test Passthrough sample test case invoking base path")
     public void testPassthroughServiceByBasePath() throws IOException {
-        HttpResponse response = HttpClientRequest.doGet(getServiceURLHttp("passthrough"));
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("passthrough"), TestConstant.GET);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
@@ -44,14 +44,14 @@ public class PassthroughServiceSampleTestCase extends IntegrationTestCase {
 
     @Test(description = "Test the payload For HEAD")
     public void testPayloadForHEAD() throws IOException {
-        HttpResponse response = HttpClientRequest.doHead(getServiceURLHttp("/headQuote/stocks"));
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("/headQuote/stocks"), TestConstant.HEAD);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getData(), "", "Message content mismatched");
     }
 
     @Test(description = "Test PasthroughSampleForHEAD sample test case  For HEAD")
     public void testPasthroughSampleForHEAD() throws IOException {
-        HttpResponse response = HttpClientRequest.doHead(getServiceURLHttp("/sampleHead"));
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("/sampleHead"), TestConstant.HEAD);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getData(), "", "Message content mismatched");
     }

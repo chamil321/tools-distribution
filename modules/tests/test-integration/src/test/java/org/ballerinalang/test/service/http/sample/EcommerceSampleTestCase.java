@@ -36,7 +36,8 @@ public class EcommerceSampleTestCase extends IntegrationTestCase {
 
     @Test(description = "Test resource GET products in E-Commerce sample")
     public void testGetProducts() throws IOException {
-        HttpResponse response = HttpClientRequest.doGet(getServiceURLHttp("ecommerceservice/products/123001"));
+        HttpResponse response = HttpClientRequest
+                .doExecute(getServiceURLHttp("ecommerceservice/products/123001"), TestConstant.GET);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE), TestConstant.CONTENT_TYPE_JSON,
                 "Content-Type mismatched");
@@ -47,7 +48,8 @@ public class EcommerceSampleTestCase extends IntegrationTestCase {
 
     @Test(description = "Test resource GET orders in E-Commerce sample")
     public void testGetOrders() throws IOException {
-        HttpResponse response = HttpClientRequest.doGet(getServiceURLHttp("ecommerceservice/orders"));
+        HttpResponse response = HttpClientRequest
+                .doExecute(getServiceURLHttp("ecommerceservice/orders"), TestConstant.GET);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
@@ -58,7 +60,8 @@ public class EcommerceSampleTestCase extends IntegrationTestCase {
 
     @Test(description = "Test resource GET customers in E-Commerce sample")
     public void testGetCustomers() throws IOException {
-        HttpResponse response = HttpClientRequest.doGet(getServiceURLHttp("ecommerceservice/customers"));
+        HttpResponse response = HttpClientRequest
+                .doExecute(getServiceURLHttp("ecommerceservice/customers"), TestConstant.GET);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
@@ -71,8 +74,8 @@ public class EcommerceSampleTestCase extends IntegrationTestCase {
     public void testPostOrder() throws IOException {
         Map<String, String> headers = new HashMap<>();
         headers.put(TestConstant.HEADER_CONTENT_TYPE, TestConstant.CONTENT_TYPE_JSON);
-        HttpResponse response = HttpClientRequest.doPost(getServiceURLHttp("ecommerceservice/orders")
-                , "{\"Order\":{\"ID\":\"111222\",\"Name\":\"XYZ123\"}}", headers);
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("ecommerceservice/orders")
+                , TestConstant.POST, "{\"Order\":{\"ID\":\"111222\",\"Name\":\"XYZ123\"}}", headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
@@ -84,8 +87,8 @@ public class EcommerceSampleTestCase extends IntegrationTestCase {
     public void testPostProduct() throws IOException {
         Map<String, String> headers = new HashMap<>();
         headers.put(TestConstant.HEADER_CONTENT_TYPE, TestConstant.CONTENT_TYPE_JSON);
-        HttpResponse response = HttpClientRequest.doPost(getServiceURLHttp("ecommerceservice/products")
-                , "{\"Product\":{\"ID\":\"123345\",\"Name\":\"PQR\"}}", headers);
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("ecommerceservice/products")
+                , TestConstant.POST, "{\"Product\":{\"ID\":\"123345\",\"Name\":\"PQR\"}}", headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
@@ -97,8 +100,8 @@ public class EcommerceSampleTestCase extends IntegrationTestCase {
     public void testPostCustomers() throws IOException {
         Map<String, String> headers = new HashMap<>();
         headers.put(TestConstant.HEADER_CONTENT_TYPE, TestConstant.CONTENT_TYPE_JSON);
-        HttpResponse response = HttpClientRequest.doPost(getServiceURLHttp("ecommerceservice/customers")
-                , "{\"Customer\":{\"ID\":\"97453\",\"Name\":\"ABC XYZ\"}}", headers);
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("ecommerceservice/customers")
+                , TestConstant.POST, "{\"Customer\":{\"ID\":\"97453\",\"Name\":\"ABC XYZ\"}}", headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");

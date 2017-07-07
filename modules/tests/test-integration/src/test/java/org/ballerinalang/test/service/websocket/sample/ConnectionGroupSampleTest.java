@@ -1,6 +1,7 @@
 package org.ballerinalang.test.service.websocket.sample;
 
 import org.ballerinalang.test.util.HttpClientRequest;
+import org.ballerinalang.test.util.TestConstant;
 import org.ballerinalang.test.util.websocket.WebSocketClient;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -46,8 +47,8 @@ public class ConnectionGroupSampleTest extends WebSocketIntegrationTest {
         String evenString = "hi even";
         String oddString = "hi odd";
         Map<String, String> headers = new HashMap<>();
-        HttpClientRequest.doPost(getServiceURLHttp("groupInfo/even"), evenString, headers);
-        HttpClientRequest.doPost(getServiceURLHttp("groupInfo/odd"), oddString, headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("groupInfo/even"), TestConstant.POST, evenString, headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("groupInfo/odd"), TestConstant.POST, oddString, headers);
         Thread.sleep(threadSleepTime);
         for (int i = 0; i < clientCount; i++) {
             if (i % 2 == 0) {
@@ -64,7 +65,7 @@ public class ConnectionGroupSampleTest extends WebSocketIntegrationTest {
         clients[0].sendText("removeMe");
         Map<String, String> headers = new HashMap<>();
         String oddString = "hi even 0 removed";
-        HttpClientRequest.doPost(getServiceURLHttp("groupInfo/odd"), oddString, headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("groupInfo/odd"), TestConstant.POST, oddString, headers);
         Thread.sleep(threadSleepTime);
         Assert.assertEquals(clients[0].getTextReceived(), null);
         for (int i = 1; i < clientCount; i++) {
@@ -78,13 +79,13 @@ public class ConnectionGroupSampleTest extends WebSocketIntegrationTest {
 
     @Test(priority = 3)
     public void testRemoveGroup() throws InterruptedException, IOException {
-        HttpClientRequest.doGet(getServiceURLHttp("groupInfo/rm-odd"));
+        HttpClientRequest.doExecute(getServiceURLHttp("groupInfo/rm-odd"), TestConstant.GET);
 
         String evenString = "hi even";
         String oddString = "hi odd";
         Map<String, String> headers = new HashMap<>();
-        HttpClientRequest.doPost(getServiceURLHttp("groupInfo/even"), evenString, headers);
-        HttpClientRequest.doPost(getServiceURLHttp("groupInfo/odd"), oddString, headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("groupInfo/even"), TestConstant.POST, evenString, headers);
+        HttpClientRequest.doExecute(getServiceURLHttp("groupInfo/odd"), TestConstant.POST, oddString, headers);
 
         Thread.sleep(threadSleepTime);
 
@@ -101,7 +102,7 @@ public class ConnectionGroupSampleTest extends WebSocketIntegrationTest {
 
     @Test(priority = 4)
     public void testCloseGroup() throws InterruptedException, IOException {
-        HttpClientRequest.doGet(getServiceURLHttp("groupInfo/close-even"));
+        HttpClientRequest.doExecute(getServiceURLHttp("groupInfo/close-even"), TestConstant.GET);
         Thread.sleep(threadSleepTime);
         for (int i = 1; i < clientCount; i++) {
             if (i % 2 == 0) {

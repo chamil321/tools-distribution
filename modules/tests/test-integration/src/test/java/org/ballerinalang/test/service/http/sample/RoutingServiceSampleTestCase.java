@@ -43,7 +43,8 @@ public class RoutingServiceSampleTestCase extends IntegrationTestCase {
         Map<String, String> headers = new HashMap<>();
         headers.put(TestConstant.HEADER_CONTENT_TYPE, TestConstant.CONTENT_TYPE_JSON);
         //sending nyse as name
-        HttpResponse response = HttpClientRequest.doPost(getServiceURLHttp("cbr"), requestNyseMessage, headers);
+        HttpResponse response = HttpClientRequest
+                .doExecute(getServiceURLHttp("cbr"), TestConstant.POST, requestNyseMessage, headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
@@ -51,7 +52,8 @@ public class RoutingServiceSampleTestCase extends IntegrationTestCase {
                                                                      "Routing failed for nyse");
 
         //sending nasdaq as name
-        response = HttpClientRequest.doPost(getServiceURLHttp("cbr"), requestNasdaqMessage, headers);
+        response = HttpClientRequest
+                .doExecute(getServiceURLHttp("cbr"), TestConstant.POST, requestNasdaqMessage, headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
@@ -65,7 +67,7 @@ public class RoutingServiceSampleTestCase extends IntegrationTestCase {
         headers.put(TestConstant.HEADER_CONTENT_TYPE, TestConstant.CONTENT_TYPE_JSON);
         //sending nyse as name header
         headers.put("name", "nyse");
-        HttpResponse response = HttpClientRequest.doGet(getServiceURLHttp("hbr"), headers);
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("hbr"), TestConstant.GET, headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
@@ -74,7 +76,7 @@ public class RoutingServiceSampleTestCase extends IntegrationTestCase {
 
         //sending nasdaq as http header
         headers.put("name", "nasdaq");
-        response = HttpClientRequest.doGet(getServiceURLHttp("hbr"), headers);
+        response = HttpClientRequest.doExecute(getServiceURLHttp("hbr"), TestConstant.GET, headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");

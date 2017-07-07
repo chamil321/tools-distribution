@@ -41,8 +41,8 @@ public class ServiceChainingSampleTestCase extends IntegrationTestCase {
     public void testEchoServiceByBasePath() throws IOException {
         Map<String, String> headers = new HashMap<>();
         headers.put(TestConstant.HEADER_CONTENT_TYPE, TestConstant.CONTENT_TYPE_JSON);
-        HttpResponse response = HttpClientRequest.doPost(getServiceURLHttp("ABCBank/locator"), requestMessage
-                , headers);
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("ABCBank/locator")
+                , TestConstant.POST, requestMessage, headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");

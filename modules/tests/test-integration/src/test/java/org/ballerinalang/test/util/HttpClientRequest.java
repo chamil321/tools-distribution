@@ -35,103 +35,86 @@ import java.util.Map;
  * This class can be used to send http request.
  */
 public class HttpClientRequest {
+
     /**
-     * Sends an HTTP GET request to a url.
+     * Sends a request to a url without payload and headers under HTTP GET or HEAD methods.
      *
      * @param requestUrl - The URL of the service. (Example: "http://www.yahoo.com/search?params=value")
+     * @param method - http request method
+     * @return - HttpResponse from the end point
+     * @throws IOException If an error occurs while sending the GET or HEAD request
+     */
+    public static HttpResponse doExecute(String requestUrl, String method) throws IOException {
+        return execute(requestUrl, method, null, new HashMap<>());
+    }
+
+    /**
+     * Sends a request to a url with headers but without payload under HTTP GET or HEAD methods.
+     *
+     * @param requestUrl - The URL of the service. (Example: "http://www.yahoo.com/search?params=value")
+     * @param method - http request method
+     * @param headers http request headers map
+     * @return - HttpResponse from the end point
+     * @throws IOException If an error occurs while sending the GET or HEAD request
+     */
+    public static HttpResponse doExecute(String requestUrl, String method, Map<String, String> headers)
+            throws IOException {
+        return execute(requestUrl, method, null, headers);
+    }
+
+    /**
+     * Sends a request to a url with headers and payload under HTTP POST,PUT and DELETE methods.
+     *
+     * @param requestUrl - The URL of the service. (Example: "http://www.yahoo.com/search?params=value")
+     * @param method - http request method
+     * @param payload - message payload
+     * @param headers http request headers map
+     * @return - HttpResponse from the end point
+     * @throws IOException If an error occurs while sending the GET or HEAD request
+     */
+    public static HttpResponse doExecute(String requestUrl, String method, String payload, Map<String, String> headers)
+            throws IOException {
+        return execute(requestUrl, method, payload, headers);
+    }
+
+    /**
+     * Execute HTTP request and return response.
+     *
+     * @param requestUrl - The URL of the service. (Example: "http://www.yahoo.com/search?params=value")
+     * @param method - http request method
+     * @param payload - message payload
      * @param headers - http request header map
      * @return - HttpResponse from the end point
-     * @throws IOException If an error occurs while sending the GET request
+     * @throws IOException If an error occurs while sending the HTTP request
      */
-    public static HttpResponse doGet(String requestUrl, Map<String, String> headers)
-            throws IOException {
-        HttpURLConnection conn = null;
-        HttpResponse httpResponse;
-        try {
-            conn = getURLConnection(requestUrl);
-            //setting request headers
-            for (Map.Entry<String, String> e : headers.entrySet()) {
-                conn.setRequestProperty(e.getKey(), e.getValue());
-            }
-            conn.setRequestMethod("GET");
-            conn.connect();
-            StringBuilder sb = new StringBuilder();
-            BufferedReader rd = null;
-            try {
-                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()
-                        , Charset.defaultCharset()));
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    sb.append(line);
-                }
-                httpResponse = new HttpResponse(sb.toString(), conn.getResponseCode());
-            } catch (IOException ex) {
-                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()
-                        , Charset.defaultCharset()));
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    sb.append(line);
-                }
-                httpResponse = new HttpResponse(sb.toString(), conn.getResponseCode());
-            } finally {
-                if (rd != null) {
-                    rd.close();
-                }
-            }
-            httpResponse.setHeaders(readHeaders(conn));
-            httpResponse.setResponseMessage(conn.getResponseMessage());
-            return httpResponse;
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
-        }
-    }
-
-    /**
-     * Sends an HTTP GET request to a url.
-     *
-     * @param requestUrl - The URL of the service. (Example: "http://www.yahoo.com/search?params=value")
-     * @return - HttpResponse from the end point
-     * @throws IOException If an error occurs while sending the GET request
-     */
-    public static HttpResponse doGet(String requestUrl) throws IOException {
-        return doGet(requestUrl, new HashMap<>());
-    }
-
-    /**
-     * Send a Http POST request to a service.
-     *
-     * @param endpoint - service endpoint
-     * @param postBody - message payload
-     * @param headers http request headers map
-     * @return - HttpResponse from end point
-     * @throws IOException If an error occurs while sending the GET request
-     */
-    public static HttpResponse doPost(String endpoint, String postBody, Map<String, String> headers)
+    public static HttpResponse execute(String requestUrl, String method, String payload, Map<String, String> headers)
             throws IOException {
         HttpURLConnection urlConnection = null;
         HttpResponse httpResponse;
         try {
-            urlConnection = getURLConnection(endpoint);
+            urlConnection = getURLConnection(requestUrl);
             //setting request headers
             for (Map.Entry<String, String> e : headers.entrySet()) {
                 urlConnection.setRequestProperty(e.getKey(), e.getValue());
             }
-            urlConnection.setRequestMethod("POST");
-            OutputStream out = urlConnection.getOutputStream();
-            try {
-                Writer writer = new OutputStreamWriter(out, "UTF-8");
-                writer.write(postBody);
-                writer.close();
-            } finally {
-                if (out != null) {
-                    out.close();
+            urlConnection.setRequestMethod(method);
+            if (method.equals(TestConstant.GET) || method.equals(TestConstant.HEAD)) {
+                urlConnection.connect();
+            } else {
+                OutputStream out = urlConnection.getOutputStream();
+                try {
+                    Writer writer = new OutputStreamWriter(out, "UTF-8");
+                    writer.write(payload);
+                    writer.close();
+                } finally {
+                    if (out != null) {
+                        out.close();
+                    }
                 }
             }
-            // Get the response
             StringBuilder sb = new StringBuilder();
             BufferedReader rd = null;
+            // Get the response
             try {
                 rd = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()
                         , Charset.defaultCharset()));
@@ -139,7 +122,7 @@ public class HttpClientRequest {
                 while ((line = rd.readLine()) != null) {
                     sb.append(line);
                 }
-            } catch (IOException e) {
+            } catch (IOException ex) {
                 rd = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream()
                         , Charset.defaultCharset()));
                 String line;
@@ -162,69 +145,134 @@ public class HttpClientRequest {
         }
     }
 
-    /**
-     * Sends an HTTP HEAD request to a url.
-     *
-     * @param requestUrl - The URL of the service. (Example: "http://www.yahoo.com/search?params=value")
-     * @return - HttpResponse from the end point
-     * @throws IOException If an error occurs while sending the HEAD request
-     */
-    public static HttpResponse doHead(String requestUrl) throws IOException {
-        return doHead(requestUrl, new HashMap<>());
-    }
 
-    /**
-     * Sends an HTTP HEAD request to a url.
-     *
-     * @param requestUrl - The URL of the service. (Example: "http://www.yahoo.com/search?params=value")
-     * @param headers - http request header map
-     * @return - HttpResponse from the end point
-     * @throws IOException If an error occurs while sending the HEAD request
-     */
-    public static HttpResponse doHead(String requestUrl, Map<String, String> headers)
-            throws IOException {
-        HttpURLConnection conn = null;
-        HttpResponse httpResponse;
-        try {
-            conn = getURLConnection(requestUrl);
-            //setting request headers
-            for (Map.Entry<String, String> e : headers.entrySet()) {
-                conn.setRequestProperty(e.getKey(), e.getValue());
-            }
-            conn.setRequestMethod("HEAD");
-            conn.connect();
-            StringBuilder sb = new StringBuilder();
-            BufferedReader rd = null;
-            try {
-                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()
-                        , Charset.defaultCharset()));
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    sb.append(line);
-                }
-                httpResponse = new HttpResponse(sb.toString(), conn.getResponseCode());
-            } catch (IOException ex) {
-                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()
-                        , Charset.defaultCharset()));
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    sb.append(line);
-                }
-                httpResponse = new HttpResponse(sb.toString(), conn.getResponseCode());
-            } finally {
-                if (rd != null) {
-                    rd.close();
-                }
-            }
-            httpResponse.setHeaders(readHeaders(conn));
-            httpResponse.setResponseMessage(conn.getResponseMessage());
-            return httpResponse;
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
-        }
-    }
+
+//    /**
+//     * Send a Http POST request to a service.
+//     *
+//     * @param endpoint - service endpoint
+//     * @param postBody - message payload
+//     * @param headers http request headers map
+//     * @return - HttpResponse from end point
+//     * @throws IOException If an error occurs while sending the GET request
+//     */
+//    public static HttpResponse doPost(String endpoint, String postBody, Map<String, String> headers)
+//            throws IOException {
+//        HttpURLConnection urlConnection = null;
+//        HttpResponse httpResponse;
+//        try {
+//            urlConnection = getURLConnection(endpoint);
+//            //setting request headers
+//            for (Map.Entry<String, String> e : headers.entrySet()) {
+//                urlConnection.setRequestProperty(e.getKey(), e.getValue());
+//            }
+//            urlConnection.setRequestMethod("POST");
+//            OutputStream out = urlConnection.getOutputStream();
+//            try {
+//                Writer writer = new OutputStreamWriter(out, "UTF-8");
+//                writer.write(postBody);
+//                writer.close();
+//            } finally {
+//                if (out != null) {
+//                    out.close();
+//                }
+//            }
+//            // Get the response
+//            StringBuilder sb = new StringBuilder();
+//            BufferedReader rd = null;
+//            try {
+//                rd = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()
+//                        , Charset.defaultCharset()));
+//                String line;
+//                while ((line = rd.readLine()) != null) {
+//                    sb.append(line);
+//                }
+//            } catch (IOException e) {
+//                rd = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream()
+//                        , Charset.defaultCharset()));
+//                String line;
+//                while ((line = rd.readLine()) != null) {
+//                    sb.append(line);
+//                }
+//            } finally {
+//                if (rd != null) {
+//                    rd.close();
+//                }
+//            }
+//            Map<String, String> responseHeaders = readHeaders(urlConnection);
+//            httpResponse = new HttpResponse(sb.toString(), urlConnection.getResponseCode(), responseHeaders);
+//            httpResponse.setResponseMessage(urlConnection.getResponseMessage());
+//            return httpResponse;
+//        } finally {
+//            if (urlConnection != null) {
+//                urlConnection.disconnect();
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Sends an HTTP HEAD request to a url.
+//     *
+//     * @param requestUrl - The URL of the service. (Example: "http://www.yahoo.com/search?params=value")
+//     * @return - HttpResponse from the end point
+//     * @throws IOException If an error occurs while sending the HEAD request
+//     */
+//    public static HttpResponse doHead(String requestUrl) throws IOException {
+//        return doHead(requestUrl, new HashMap<>());
+//    }
+//
+//    /**
+//     * Sends an HTTP HEAD request to a url.
+//     *
+//     * @param requestUrl - The URL of the service. (Example: "http://www.yahoo.com/search?params=value")
+//     * @param headers - http request header map
+//     * @return - HttpResponse from the end point
+//     * @throws IOException If an error occurs while sending the HEAD request
+//     */
+//    public static HttpResponse doHead(String requestUrl, Map<String, String> headers)
+//            throws IOException {
+//        HttpURLConnection conn = null;
+//        HttpResponse httpResponse;
+//        try {
+//            conn = getURLConnection(requestUrl);
+//            //setting request headers
+//            for (Map.Entry<String, String> e : headers.entrySet()) {
+//                conn.setRequestProperty(e.getKey(), e.getValue());
+//            }
+//            conn.setRequestMethod("HEAD");
+//            conn.connect();
+//            StringBuilder sb = new StringBuilder();
+//            BufferedReader rd = null;
+//            try {
+//                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()
+//                        , Charset.defaultCharset()));
+//                String line;
+//                while ((line = rd.readLine()) != null) {
+//                    sb.append(line);
+//                }
+//                httpResponse = new HttpResponse(sb.toString(), conn.getResponseCode());
+//            } catch (IOException ex) {
+//                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()
+//                        , Charset.defaultCharset()));
+//                String line;
+//                while ((line = rd.readLine()) != null) {
+//                    sb.append(line);
+//                }
+//                httpResponse = new HttpResponse(sb.toString(), conn.getResponseCode());
+//            } finally {
+//                if (rd != null) {
+//                    rd.close();
+//                }
+//            }
+//            httpResponse.setHeaders(readHeaders(conn));
+//            httpResponse.setResponseMessage(conn.getResponseMessage());
+//            return httpResponse;
+//        } finally {
+//            if (conn != null) {
+//                conn.disconnect();
+//            }
+//        }
+//    }
 
 
 

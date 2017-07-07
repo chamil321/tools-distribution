@@ -41,7 +41,8 @@ public class EchoServiceSampleTestCase extends IntegrationTestCase {
     public void testEchoServiceByBasePath() throws IOException {
         Map<String, String> headers = new HashMap<>();
         headers.put(TestConstant.HEADER_CONTENT_TYPE, TestConstant.CONTENT_TYPE_JSON);
-        HttpResponse response = HttpClientRequest.doPost(getServiceURLHttp("echo"), requestMessage, headers);
+        HttpResponse response = HttpClientRequest.doExecute(getServiceURLHttp("echo")
+                , TestConstant.POST, requestMessage, headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
@@ -54,7 +55,7 @@ public class EchoServiceSampleTestCase extends IntegrationTestCase {
         Map<String, String> headers = new HashMap<>();
         headers.put(TestConstant.HEADER_CONTENT_TYPE, TestConstant.CONTENT_TYPE_JSON);
         String serviceUrl = "http://localhost:9094/echo";
-        HttpResponse response = HttpClientRequest.doPost(serviceUrl, requestMessage, headers);
+        HttpResponse response = HttpClientRequest.doExecute(serviceUrl, TestConstant.POST, requestMessage, headers);
         Assert.assertEquals(response.getResponseCode(), 200, "Response code mismatched");
         Assert.assertEquals(response.getHeaders().get(TestConstant.HEADER_CONTENT_TYPE)
                 , TestConstant.CONTENT_TYPE_JSON, "Content-Type mismatched");
