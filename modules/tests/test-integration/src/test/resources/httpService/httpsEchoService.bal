@@ -1,5 +1,5 @@
 import ballerina.net.http;
-import ballerina.lang.messages;
+import ballerina.net.http.response;
 
 @http:configuration {
     basePath:"/echo",
@@ -14,11 +14,9 @@ service<http> echo {
         methods:["POST"],
         path:"/"
     }
-    resource echo (message m) {
-        message resp = {};
-        messages:setStringPayload(resp, "hello world");
-        reply resp;
-
+    resource echo (http:Request req, http:Response res) {
+        response:setStringPayload(res, "hello world");
+        response:send(res);
     }
 }
 
@@ -36,11 +34,9 @@ service<http> echoOne {
         methods:["POST"],
         path:"/abc"
     }
-    resource echoAbc (message m) {
-        message resp = {};
-        messages:setStringPayload(resp, "hello world");
-        reply resp;
-
+    resource echoAbc (http:Request req, http:Response res) {
+        response:setStringPayload(res, "hello world");
+        response:send(res);
     }
 }
 
@@ -54,11 +50,8 @@ service<http> echoDummy {
         methods:["POST"],
         path:"/"
     }
-    resource echoDummy (message m) {
-        message resp = {};
-        messages:setStringPayload(resp, "hello world");
-        reply resp;
-
+    resource echoDummy (http:Request req, http:Response res) {
+        response:setStringPayload(res, "hello world");
+        response:send(res);
     }
-
 }
